@@ -19,6 +19,10 @@ package org.azkfw.net;
 
 import junit.framework.TestCase;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
 /**
  * このクラスは、{@link IPv4}クラスの評価を行うクラスです。
  * 
@@ -26,9 +30,11 @@ import junit.framework.TestCase;
  * @version 1.0.0 2015/01/08
  * @author kawakicchi
  */
+@RunWith(JUnit4.class)
 public class IPv4Test extends TestCase {
 
-	public void test() {
+	@Test
+	public void limitString() {
 		IPv4 ip = null;
 
 		ip = new IPv4(0L);
@@ -50,7 +56,8 @@ public class IPv4Test extends TestCase {
 		assertEquals("255.255.255.255", ip.toString());
 	}
 
-	public void testLimit() {
+	@Test
+	public void limitLong() {
 		IPv4 ip = null;
 
 		ip = new IPv4(-1L);

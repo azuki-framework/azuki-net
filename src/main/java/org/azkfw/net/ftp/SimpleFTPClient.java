@@ -1,5 +1,21 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.azkfw.net.ftp;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,78 +26,76 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.azkfw.util.StringUtility;
 
+
+/**
+ * 
+ * @since 1.0.0
+ * @version 1.0.0 2015/02/10
+ * @author kawakicchi
+ */
 public class SimpleFTPClient {
 
+	/** ホスト名 */
 	private String host;
+	/** ポート番号 */
 	private int port;
 
+	/** FTPクライアント */
 	private FTPClient client;
 
-	public static void main(final String[] args) {
-		SimpleFTPClient client = new SimpleFTPClient();
-
-		// ARIN アメリカ
-		// ftp://ftp.arin.net/pub/stats/arin/delegated-arin-extended-latest
-		client.connect("ftp.arin.net");
-		client.login();
-		client.download("/pub/stats/arin/delegated-arin-extended-latest", "delegated-arin-extended-latest.csv");
-		client.logout();
-		client.disconnect();
-
-		// RIPE ヨーロッパ
-		// ftp://ftp.ripe.net/pub/stats/ripencc/delegated-ripencc-extended-latest
-		client.connect("ftp.ripe.net");
-		client.login();
-		client.download("/pub/stats/ripencc/delegated-ripencc-extended-latest", "delegated-ripencc-extended-latest.csv");
-		client.logout();
-		client.disconnect();
-
-		// AP アジア
-		// ftp://ftp.apnic.net/pub/stats/apnic/delegated-apnic-extended-latest
-		client.connect("ftp.apnic.net");
-		client.login();
-		client.download("/pub/stats/apnic/delegated-apnic-extended-latest", "delegated-apnic-extended-latest.csv");
-		client.logout();
-		client.disconnect();
-
-		// LAC ラテンアメリカ
-		// ftp://ftp.lacnic.net/pub/stats/lacnic/delegated-lacnic-extended-latest
-		client.connect("ftp.lacnic.net");
-		client.login();
-		client.download("/pub/stats/lacnic/delegated-lacnic-extended-latest", "delegated-lacnic-extended-latest.csv");
-		client.logout();
-		client.disconnect();
-
-		// AFRI アフリカ
-		// ftp://ftp.afrinic.net/pub/stats/afrinic/delegated-afrinic-extended-latest
-		client.connect("ftp.afrinic.net");
-		client.login();
-		client.download("/pub/stats/afrinic/delegated-afrinic-extended-latest", "delegated-afrinic-extended-latest.csv");
-		client.logout();
-		client.disconnect();
-	}
-
+	/**
+	 * コンストラクタ
+	 */
 	public SimpleFTPClient() {
 
 	}
 
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param host ホスト名
+	 */
 	public SimpleFTPClient(final String host) {
 		this(host, 21);
 	}
 
+	/**
+	 * コンストラクタ
+	 * 
+	 * @param host ホスト名
+	 * @param port ポート番号
+	 */
 	public SimpleFTPClient(final String host, final int port) {
 		this.host = host;
 		this.port = port;
 	}
 
+	/**
+	 * ホストに接続する。
+	 * 
+	 * @return 結果
+	 */
 	public boolean connect() {
 		return connect(host, port);
 	}
 
+	/**
+	 * ホストに接続する。
+	 * 
+	 * @param host ホスト名
+	 * @return 結果
+	 */
 	public boolean connect(final String host) {
 		return connect(host, 21);
 	}
 
+	/**
+	 * ホストに接続する。
+	 * 
+	 * @param host ホスト名
+	 * @param port ポート番号
+	 * @return 結果
+	 */
 	public boolean connect(final String host, final int port) {
 		boolean result = false;
 
@@ -116,10 +130,47 @@ public class SimpleFTPClient {
 		return result;
 	}
 
-	public boolean login() {
-		return login("anonymous", "anonymous");
+	/**
+	 * ホストを切断する。
+	 * 
+	 * @return 結果
+	 */
+	public boolean disconnect() {
+		boolean result = true;
+
+		if (null != client) {
+			if (client.isConnected()) {
+				try {
+					client.disconnect();
+				} catch (IOException ex) {
+					result = false;
+					ex.printStackTrace();
+				}
+			}
+		}
+
+		return result;
 	}
 
+	/**
+	 * ログインする。
+	 * <p>
+	 * 匿名アクセス
+	 * </p>
+	 * 
+	 * @return 結果
+	 */
+	public boolean login() {
+		return login("anonymous", "azuki@");
+	}
+
+	/**
+	 * ログインする
+	 * 
+	 * @param user ユーザ名
+	 * @param password パスワード
+	 * @return 結果
+	 */
 	public boolean login(final String user, final String password) {
 		boolean result = false;
 		try {
@@ -143,6 +194,21 @@ public class SimpleFTPClient {
 
 		}
 
+		return result;
+	}
+
+	/**
+	 * ログアウトする。
+	 * 
+	 * @return 結果
+	 */
+	public boolean logout() {
+		boolean result = false;
+		try {
+			result = client.logout();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 		return result;
 	}
 
@@ -183,33 +249,6 @@ public class SimpleFTPClient {
 			showServerReply(client);
 
 			ex.printStackTrace();
-		}
-
-		return result;
-	}
-
-	public boolean logout() {
-		boolean result = false;
-		try {
-			result = client.logout();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		return result;
-	}
-
-	public boolean disconnect() {
-		boolean result = true;
-
-		if (null != client) {
-			if (client.isConnected()) {
-				try {
-					client.disconnect();
-				} catch (IOException ex) {
-					result = false;
-					ex.printStackTrace();
-				}
-			}
 		}
 
 		return result;
